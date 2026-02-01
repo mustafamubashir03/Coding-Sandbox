@@ -1,0 +1,15 @@
+html, body, #root {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    width: 100%;
+    background: radial-gradient(circle at 30% 10%, rgba(97,218,251,0.08) 0%, #0b0c10 70%),
+                linear-gradient(135deg, #0c0d14 0%, #101216 100%);
+  }
+  
+  
+  /* Optional: make all elements use border-box */
+  *, *::before, *::after {
+    box-sizing: inherit;
+  }
+  
