@@ -13,3 +13,70 @@ html, body, #root {
     box-sizing: inherit;
   }
   
+/* Base */
+.react-resizable {
+    position: relative;
+  }
+  
+  /* ===== Vertical handles (left / right panels) ===== */
+  .react-resizable-handle-e,
+  .react-resizable-handle-w {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 6px;
+    cursor: col-resize;
+  
+    /* invisible by default */
+    background: transparent;
+  
+    /* glass edge */
+    transition: background 0.15s ease;
+  }
+  
+  .react-resizable-handle-e {
+    right: -3px;
+  }
+  
+  .react-resizable-handle-w {
+    left: -3px;
+  }
+  
+  /* ===== Horizontal handle (terminal) ===== */
+  .react-resizable-handle-n {
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 6px;
+    top: -3px;
+    cursor: row-resize;
+  
+    background: transparent;
+    transition: background 0.15s ease;
+  }
+  
+  /* ===== Hover effect (editor-like) ===== */
+  .react-resizable-handle:hover {
+    background: linear-gradient(
+      to right,
+      transparent,
+      rgba(80, 160, 255, 0.35),
+      transparent
+    );
+  }
+  
+  /* Horizontal hover */
+  .react-resizable-handle-n:hover {
+    background: linear-gradient(
+      to bottom,
+      transparent,
+      rgba(80, 160, 255, 0.35),
+      transparent
+    );
+  }
+  .react-resizable:hover .react-resizable-handle {
+    background: rgba(80,160,255,0.15);
+  }
+    
+  
+  

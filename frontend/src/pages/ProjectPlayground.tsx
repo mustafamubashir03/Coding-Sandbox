@@ -1,13 +1,84 @@
+import { Layout } from "antd"
 import { useParams } from "react-router-dom"
 import EditorComponent from "../components/molecules/EditorComponent/EditorComponent"
+import EditorTabsBar from "../components/molecules/EditorComponent/EditorTabsBar/EditorTabsBar"
+import TreeStructure from "../components/organisms/TreeStructure/TreeStructure"
+
+const { Sider, Content, Footer } = Layout
 
 const ProjectPlayground = () => {
-    const {projectId} = useParams()
-    console.log(projectId)
+  const { projectId } = useParams()
+  console.log(projectId)
+
   return (
-    <div>
-        <EditorComponent/>
-    </div>
+    <Layout style={{ height: "100vh", background: "transparent" }}>
+      
+      {/* LEFT FILE TREE */}
+      <Sider
+        width={300}
+        theme="dark"
+        style={{
+          background: "transparent",
+          backdropFilter: "blur(12px)",
+          borderRight: "1px solid rgba(255,255,255,0.06)",
+          overflow: "auto",
+        }}
+        breakpoint="lg"
+        collapsedWidth={0}
+      >
+        <TreeStructure />
+      </Sider>
+
+      {/* CENTER COLUMN (EDITOR + TERMINAL) */}
+      <Layout style={{ background: "transparent" }}>
+        
+        {/* EDITOR AREA */}
+        <Content
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            background: "rgba(30,30,30,0.55)",
+            backdropFilter: "blur(14px)",
+          }}
+        >
+          <EditorTabsBar />
+          <div style={{ flex: 1, overflow: "hidden" }}>
+            <EditorComponent />
+          </div>
+        </Content>
+
+        {/* TERMINAL */}
+        <Footer
+          style={{
+            height: "28vh",
+            background: "rgba(10,10,10,0.7)",
+            backdropFilter: "blur(10px)",
+            borderTop: "1px solid rgba(255,255,255,0.06)",
+            padding: "8px",
+            color: "#aaa",
+          }}
+        >
+          Terminal
+        </Footer>
+
+      </Layout>
+
+      {/* RIGHT PREVIEW */}
+      <Sider
+        width={360}
+        theme="dark"
+        style={{
+          background: "rgba(20,20,20,0.6)",
+          backdropFilter: "blur(12px)",
+          borderLeft: "1px solid rgba(255,255,255,0.06)",
+        }}
+        breakpoint="xl"
+        collapsedWidth={0}
+      >
+        Preview
+      </Sider>
+
+    </Layout>
   )
 }
 

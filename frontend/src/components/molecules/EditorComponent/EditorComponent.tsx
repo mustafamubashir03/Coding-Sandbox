@@ -8,7 +8,7 @@ const EditorComponent = () => {
       width="100%"
       defaultLanguage="javascript"
       defaultValue="// Welcome to DevPlayground"
-      theme="app-glass" // ← Pass the theme here
+      theme="app-glass"
       beforeMount={(monaco) => {
         monaco.editor.defineTheme("app-glass", appGlassTheme);
       }}
