@@ -19,7 +19,7 @@
     "sourceMap": true,
     "declaration": true,
     "declarationMap": true,
-    "moduleResolution": "NodeNext", 
+    "moduleResolution": "NodeNext",
 
     // Stricter Typechecking Options
     "noUncheckedIndexedAccess": true,
@@ -41,6 +41,6 @@
     "noUncheckedSideEffectImports": true,
     "esModuleInterop": true,
     "moduleDetection": "force",
-    "skipLibCheck": true,
+    "skipLibCheck": true
   }
 }
