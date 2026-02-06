@@ -1,5 +1,5 @@
-import Editor from "@monaco-editor/react";
-import appGlassTheme from "../../../themes/appGlassTheme.json";
+import Editor from '@monaco-editor/react';
+import appGlassTheme from '../../../themes/appGlassTheme.json';
 
 const EditorComponent = () => {
   return (
@@ -10,14 +10,14 @@ const EditorComponent = () => {
       defaultValue="// Welcome to DevPlayground"
       theme="app-glass"
       beforeMount={(monaco) => {
-        monaco.editor.defineTheme("app-glass", appGlassTheme);
+        monaco.editor.defineTheme('app-glass', appGlassTheme);
       }}
       options={{
         fontSize: 18,
-        fontFamily: "Fira Code, monospace",
+        fontFamily: 'Fira Code, monospace',
         minimap: { enabled: false },
         automaticLayout: true,
-        lineNumbers: "on",
+        lineNumbers: 'on',
       }}
     />
   );
