@@ -3,26 +3,42 @@ import fs from 'fs/promises';
 import path from 'path';
 const BASE_PROJECTS_PATH = path.join(process.cwd(), 'projects');
 export const handleEditorSocketEvents = (socket: Socket) => {
-    const resolveSafePath = ({projectId, relativePath}:{projectId:string,relativePath:string}) => {
-        // Absolute path to the project folder
-        const projectRoot = path.join(BASE_PROJECTS_PATH, projectId);
-      
-        // Absolute path to the requested file/folder
-        const safePath = path.join(projectRoot, relativePath);
-      
-        // Security check: prevent path traversal outside the project folder
-        if (!safePath.startsWith(projectRoot)) {
-          throw new Error('Invalid path');
-        }
-      
-        return safePath;
-      };
-      
+  const resolveSafePath = ({
+    projectId,
+    relativePath,
+  }: {
+    projectId: string;
+    relativePath: string;
+  }) => {
+    // Absolute path to the project folder
+    const projectRoot = path.join(BASE_PROJECTS_PATH, projectId);
+
+    // Absolute path to the requested file/folder
+    const safePath = path.join(projectRoot, relativePath);
+
+    // Security check: prevent path traversal outside the project folder
+    if (!safePath.startsWith(projectRoot)) {
+      throw new Error('Invalid path');
+    }
+
+    return safePath;
+  };
+
   socket.on(
     'writeFile',
-    async ({ data, pathToFileFolder }: { data: string; pathToFileFolder: string }) => {
+    async ({
+      data,
+      pathToFileFolder,
+      projectId,
+    }: {
+      data: string;
+      pathToFileFolder: string;
+      projectId: string;
+    }) => {
       try {
-        const response = await fs.writeFile(pathToFileFolder, data);
+        const safePath = resolveSafePath({ projectId, relativePath: pathToFileFolder });
+        const response = await fs.writeFile(safePath, data);
+        console.log(response);
         socket.emit('writeFileSuccess', {
           data: 'File written successfully',
         });
@@ -42,7 +58,7 @@ export const handleEditorSocketEvents = (socket: Socket) => {
       });
     }
     try {
-      const response = await fs.writeFile(pathToFileFolder , '');
+      const response = await fs.writeFile(pathToFileFolder, '');
       socket.emit('createFileSuccess', {
         data: 'File has been created successfully',
       });
@@ -55,12 +71,11 @@ export const handleEditorSocketEvents = (socket: Socket) => {
   });
   socket.on('readFile', async ({ pathToFileFolder, projectId }) => {
     try {
-      const safePath = resolveSafePath({projectId,relativePath:pathToFileFolder});
-      const response = await fs.readFile(safePath,'utf-8');
-      console.log(response)
-      socket.emit('readFileSuccess', { 
+      const safePath = resolveSafePath({ projectId, relativePath: pathToFileFolder });
+      const response = await fs.readFile(safePath, 'utf-8');
+      socket.emit('readFileSuccess', {
         value: response,
-        path:pathToFileFolder
+        path: pathToFileFolder,
       });
     } catch (error) {
       console.log('Error occured reading file', error);
