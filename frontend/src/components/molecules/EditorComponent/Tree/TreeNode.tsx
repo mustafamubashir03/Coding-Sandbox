@@ -12,10 +12,10 @@ export type fileFolderDataType = {
 };
 
 const TreeNode = ({ fileFolderData }: { fileFolderData: fileFolderDataType | null }) => {
-  const {projectId} = useParams();
+  const { projectId } = useParams();
   const [visibility, setVisibility] = useState<{ [key: string]: boolean }>({});
   const [hovered, setHovered] = useState<string | null>(null);
-  const {editorSocket} = useEditorSocketStore()
+  const { editorSocket } = useEditorSocketStore();
 
   const toggleVisibility = (name: string) => {
     setVisibility((prev) => ({
@@ -25,15 +25,13 @@ const TreeNode = ({ fileFolderData }: { fileFolderData: fileFolderDataType | nul
   };
 
   const hasChildren = fileFolderData?.children && fileFolderData.children.length > 0;
-  const handleFileClick = (fileFolderData:fileFolderDataType)=>{
-    console.log(fileFolderData)
-    editorSocket?.emit('readFile',{
+  const handleFileClick = (fileFolderData: fileFolderDataType) => {
+    console.log(fileFolderData);
+    editorSocket?.emit('readFile', {
       projectId,
-      pathToFileFolder:fileFolderData?.relativePath
-    })
-
-  }
-
+      pathToFileFolder: fileFolderData?.relativePath,
+    });
+  };
 
   return (
     <div
@@ -107,7 +105,12 @@ const TreeNode = ({ fileFolderData }: { fileFolderData: fileFolderDataType | nul
           >
             <FileIcon extension={fileFolderLengthCompute(fileFolderData!)} />
           </div>
-          <p onClick={()=>handleFileClick(fileFolderData!)} style={{ margin: 0, lineHeight: 1.2 }}>{fileFolderData?.name}</p>
+          <p
+            onClick={() => handleFileClick(fileFolderData!)}
+            style={{ margin: 0, lineHeight: 1.2 }}
+          >
+            {fileFolderData?.name}
+          </p>
         </div>
       )}
 
