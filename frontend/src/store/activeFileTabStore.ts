@@ -1,6 +1,15 @@
 import { create } from 'zustand';
 
-export const useActiveFileTabStore = create((set) => {
+interface activeFileTabStoreType{
+  activeFileTab: {
+    path: string,
+    value: string,
+    extension: string,
+  } | null,
+  setActiveFileTab:(path: string, value: string, extension: string)=>void
+}
+
+export const useActiveFileTabStore = create<activeFileTabStoreType>((set) => {
   return {
     activeFileTab: null,
     setActiveFileTab: (path: string, value: string, extension: string) => {

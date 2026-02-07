@@ -1,6 +1,9 @@
 import { useState } from 'react';
 import { FaChevronRight } from 'react-icons/fa';
 import FileIcon from '../../../atoms/FileIcon/FileIcon';
+import { fileFolderLengthCompute } from '../../../../utils/fileFolderLength';
+import { useEditorSocketStore } from '../../../../store/editorSocketStore';
+import { useParams } from 'react-router-dom';
 
 export type fileFolderDataType = {
   name: string;
@@ -8,13 +11,11 @@ export type fileFolderDataType = {
   children?: fileFolderDataType[];
 };
 
-const TreeNode = ({
-  fileFolderData,
-}: {
-  fileFolderData: fileFolderDataType | null;
-}) => {
+const TreeNode = ({ fileFolderData }: { fileFolderData: fileFolderDataType | null }) => {
+  const {projectId} = useParams();
   const [visibility, setVisibility] = useState<{ [key: string]: boolean }>({});
   const [hovered, setHovered] = useState<string | null>(null);
+  const {editorSocket} = useEditorSocketStore()
 
   const toggleVisibility = (name: string) => {
     setVisibility((prev) => ({
@@ -23,29 +24,16 @@ const TreeNode = ({
     }));
   };
 
-  const hasChildren =
-    fileFolderData?.children && fileFolderData.children.length > 0;
+  const hasChildren = fileFolderData?.children && fileFolderData.children.length > 0;
+  const handleFileClick = (fileFolderData:fileFolderDataType)=>{
+    console.log(fileFolderData)
+    editorSocket?.emit('readFile',{
+      projectId,
+      pathToFileFolder:fileFolderData?.relativePath
+    })
 
-  const fileFolderLengthCompute = (file: fileFolderDataType | null) => {
-    if (!file) return '';
+  }
 
-    const name = file.name || '';
-
-    // Special files first — keys must match iconMap
-    if (name === '.gitignore') return 'gitignore';
-    if (name === 'package.json') return 'package.json';
-    if (name === 'vite.config.js') return 'vite.config.js';
-    if (name === 'eslint.config.js') return 'eslint';
-
-    if (name.startsWith('.') && !name.includes('.', 1)) return name;
-
-    if (file.children && file.children.length >= 0) return 'folder';
-
-    const parts = name.split('.');
-    if (parts.length > 1) return parts[parts.length - 1];
-
-    return '';
-  };
 
   return (
     <div
@@ -67,17 +55,14 @@ const TreeNode = ({
             padding: '6px 8px',
             marginBottom: '2px',
             backgroundColor:
-              hovered === fileFolderData?.name
-                ? 'rgba(97,218,251,0.12)'
-                : 'transparent',
+              hovered === fileFolderData?.name ? 'rgba(97,218,251,0.12)' : 'transparent',
             border: 'none',
             cursor: 'pointer',
             outline: 'none',
             fontWeight: 500,
             fontSize: '14px',
             color: '#7ac7ff',
-            transition:
-              'background 0.2s ease, color 0.2s ease, border 0.2s ease',
+            transition: 'background 0.2s ease, color 0.2s ease, border 0.2s ease',
           }}
           onMouseEnter={() => setHovered(fileFolderData?.name)}
           onMouseLeave={() => setHovered(null)}
@@ -87,15 +72,10 @@ const TreeNode = ({
               fontSize: '14px',
               color: '#61dafb',
               transition: 'transform 0.2s ease',
-              transform: visibility[fileFolderData?.name]
-                ? 'rotate(90deg)'
-                : 'rotate(0deg)',
+              transform: visibility[fileFolderData?.name] ? 'rotate(90deg)' : 'rotate(0deg)',
             }}
           />
-          <FileIcon
-            extension={fileFolderLengthCompute(fileFolderData!)}
-            size={18}
-          />
+          <FileIcon extension={fileFolderLengthCompute(fileFolderData!)} size={18} />
           <span style={{ flexGrow: 1 }}>{fileFolderData?.name}</span>
         </button>
       ) : (
@@ -109,9 +89,7 @@ const TreeNode = ({
             cursor: 'pointer',
             borderRadius: '4px',
             backgroundColor:
-              hovered === fileFolderData?.name
-                ? 'rgba(108,176,232,0.08)'
-                : 'transparent', // subtle hover
+              hovered === fileFolderData?.name ? 'rgba(108,176,232,0.08)' : 'transparent', // subtle hover
             color: '#6cb0e8',
             transition: 'background 0.15s ease, color 0.15s ease',
             fontFamily: 'Fira Code, monospace',
@@ -129,7 +107,7 @@ const TreeNode = ({
           >
             <FileIcon extension={fileFolderLengthCompute(fileFolderData!)} />
           </div>
-          <p style={{ margin: 0, lineHeight: 1.2 }}>{fileFolderData?.name}</p>
+          <p onClick={()=>handleFileClick(fileFolderData!)} style={{ margin: 0, lineHeight: 1.2 }}>{fileFolderData?.name}</p>
         </div>
       )}
 

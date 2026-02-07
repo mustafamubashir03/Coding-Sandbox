@@ -113,8 +113,7 @@ const CreateProject = () => {
                 lineHeight: 1.5,
               }}
             >
-              A modern cloud playground to create, test, and ship projects
-              instantly.
+              A modern cloud playground to create, test, and ship projects instantly.
             </Paragraph>
 
             <Button

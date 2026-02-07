@@ -16,14 +16,11 @@ const ProjectPlayground = () => {
     if (!projectId) {
       return;
     }
-    const editorSocketConnection = io(
-      `${import.meta.env.VITE_BACKEND_URL}/editor`,
-      {
-        auth: {
-          projectId,
-        },
+    const editorSocketConnection = io(`${import.meta.env.VITE_BACKEND_URL}/editor`, {
+      auth: {
+        projectId,
       },
-    );
+    });
     setEditorSocket(editorSocketConnection);
     return () => {
       editorSocketConnection.disconnect();

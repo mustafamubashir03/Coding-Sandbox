@@ -83,10 +83,7 @@ const FileIcon: React.FC<FileIconProps> = ({ extension, size = 20 }) => {
     vite: { icon: <SiVite size={size} />, color: '#7b7cff' },
   };
 
-  if (iconMap[ext])
-    return (
-      <span style={{ color: iconMap[ext].color }}>{iconMap[ext].icon}</span>
-    );
+  if (iconMap[ext]) return <span style={{ color: iconMap[ext].color }}>{iconMap[ext].icon}</span>;
 
   // fallback generic file icon
   return <FaFileAlt size={size} color="#9e9e9e" />;

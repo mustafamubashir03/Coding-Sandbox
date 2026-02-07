@@ -6,11 +6,7 @@ body,
   height: 100%;
   width: 100%;
   background:
-    radial-gradient(
-      circle at 30% 10%,
-      rgba(97, 218, 251, 0.08) 0%,
-      #0b0c10 70%
-    ),
+    radial-gradient(circle at 30% 10%, rgba(97, 218, 251, 0.08) 0%, #0b0c10 70%),
     linear-gradient(135deg, #0c0d14 0%, #101216 100%);
 }
 
@@ -65,22 +61,12 @@ body,
 
 /* ===== Hover effect (editor-like) ===== */
 .react-resizable-handle:hover {
-  background: linear-gradient(
-    to right,
-    transparent,
-    rgba(80, 160, 255, 0.35),
-    transparent
-  );
+  background: linear-gradient(to right, transparent, rgba(80, 160, 255, 0.35), transparent);
 }
 
 /* Horizontal hover */
 .react-resizable-handle-n:hover {
-  background: linear-gradient(
-    to bottom,
-    transparent,
-    rgba(80, 160, 255, 0.35),
-    transparent
-  );
+  background: linear-gradient(to bottom, transparent, rgba(80, 160, 255, 0.35), transparent);
 }
 .react-resizable:hover .react-resizable-handle {
   background: rgba(80, 160, 255, 0.15);
