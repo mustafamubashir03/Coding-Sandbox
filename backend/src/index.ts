@@ -45,7 +45,7 @@ editorNamespace.on('connection', (socket) => {
       console.log(event, path);
     });
   }
-  handleEditorSocketEvents(socket);
+  handleEditorSocketEvents(socket, editorNamespace);
   socket.on('disconnect', async () => {
     if (watcher) {
       await watcher.close();

@@ -1,29 +1,7 @@
-import { Socket } from 'socket.io';
+import { Namespace, Socket } from 'socket.io';
 import fs from 'fs/promises';
-import path from 'path';
-const BASE_PROJECTS_PATH = path.join(process.cwd(), 'projects');
-export const handleEditorSocketEvents = (socket: Socket) => {
-  const resolveSafePath = ({
-    projectId,
-    relativePath,
-  }: {
-    projectId: string;
-    relativePath: string;
-  }) => {
-    // Absolute path to the project folder
-    const projectRoot = path.join(BASE_PROJECTS_PATH, projectId);
-
-    // Absolute path to the requested file/folder
-    const safePath = path.join(projectRoot, relativePath);
-
-    // Security check: prevent path traversal outside the project folder
-    if (!safePath.startsWith(projectRoot)) {
-      throw new Error('Invalid path');
-    }
-
-    return safePath;
-  };
-
+import { resolveSafePath } from '../utils/resolveSafePath.js';
+export const handleEditorSocketEvents = (socket: Socket, editorNamespace: Namespace) => {
   socket.on(
     'writeFile',
     async ({
@@ -37,10 +15,10 @@ export const handleEditorSocketEvents = (socket: Socket) => {
     }) => {
       try {
         const safePath = resolveSafePath({ projectId, relativePath: pathToFileFolder });
-        const response = await fs.writeFile(safePath, data);
-        console.log(response);
-        socket.emit('writeFileSuccess', {
+        await fs.writeFile(safePath, data);
+        editorNamespace.emit('writeFileSuccess', {
           data: 'File written successfully',
+          path: pathToFileFolder,
         });
       } catch (error) {
         console.log('Error occured while writing file', error);
@@ -69,34 +47,41 @@ export const handleEditorSocketEvents = (socket: Socket) => {
       });
     }
   });
-  socket.on('readFile', async ({ pathToFileFolder, projectId }) => {
-    try {
-      const safePath = resolveSafePath({ projectId, relativePath: pathToFileFolder });
-      const response = await fs.readFile(safePath, 'utf-8');
-      socket.emit('readFileSuccess', {
-        value: response,
-        path: pathToFileFolder,
-      });
-    } catch (error) {
-      console.log('Error occured reading file', error);
-      socket.emit('readFileError', {
-        data: 'Error occured while reading file',
-      });
-    }
-  });
-  socket.on('deleteFile', async ({ pathToFileFolder }) => {
-    try {
-      const response = await fs.unlink(pathToFileFolder);
-      socket.emit('deleteFileSuccess', {
-        data: 'File deleted successfully',
-      });
-    } catch (error) {
-      console.log('Error occured deleting file', error);
-      socket.emit('deleteFileError', {
-        data: 'Error occured while deleting file',
-      });
-    }
-  });
+  socket.on(
+    'readFile',
+    async ({ pathToFileFolder, projectId }: { pathToFileFolder: string; projectId: string }) => {
+      try {
+        const safePath = resolveSafePath({ projectId, relativePath: pathToFileFolder });
+        const response = await fs.readFile(safePath, 'utf-8');
+        socket.emit('readFileSuccess', {
+          value: response,
+          path: pathToFileFolder,
+        });
+      } catch (error) {
+        console.log('Error occured reading file', error);
+        socket.emit('readFileError', {
+          data: 'Error occured while reading file',
+        });
+      }
+    },
+  );
+  socket.on(
+    'deleteFile',
+    async ({ pathToFileFolder, projectId }: { pathToFileFolder: string; projectId: string }) => {
+      try {
+        const safePath = resolveSafePath({ projectId, relativePath: pathToFileFolder });
+        const response = await fs.unlink(safePath);
+        socket.emit('deleteFileSuccess', {
+          data: 'File deleted successfully',
+        });
+      } catch (error) {
+        console.log('Error occured deleting file', error);
+        socket.emit('deleteFileError', {
+          data: 'Error occured while deleting file',
+        });
+      }
+    },
+  );
   socket.on('createFolder', async ({ pathToFileFolder }: { pathToFileFolder: string }) => {
     const isFileAlreadyPresent = await fs.access(pathToFileFolder);
     if (isFileAlreadyPresent!) {
