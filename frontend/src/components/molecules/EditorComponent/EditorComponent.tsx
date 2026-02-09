@@ -3,25 +3,31 @@ import appGlassTheme from '../../../themes/appGlassTheme.json';
 import { useActiveFileTabStore } from '../../../store/activeFileTabStore';
 import { useEditorSocketStore } from '../../../store/editorSocketStore';
 import { useParams } from 'react-router-dom';
-
+let timerId: ReturnType<typeof setTimeout> | null = null;
 const EditorComponent = () => {
   const { editorSocket } = useEditorSocketStore();
   const { activeFileTab } = useActiveFileTabStore();
   const { projectId } = useParams();
-  const handleChanges = (value) => {
-    const editorValue = value;
-    editorSocket?.emit('writeFile', {
-      data: editorValue,
-      pathToFileFolder: activeFileTab?.path,
-      projectId,
-    });
+  const handleChanges = (value: string | undefined) => {
+    if (timerId !== null) {
+      clearTimeout(timerId);
+    }
+
+    timerId = setTimeout(() => {
+      const editorValue = value;
+      editorSocket?.emit('writeFile', {
+        data: editorValue,
+        pathToFileFolder: activeFileTab?.path,
+        projectId,
+      });
+    }, 2000);
   };
 
   return (
     <Editor
       height="80vh"
       width="100%"
-      defaultLanguage="javascriptReact"
+      defaultLanguage="react"
       defaultValue="// Welcome to DevPlayground"
       value={activeFileTab?.value}
       onChange={handleChanges}

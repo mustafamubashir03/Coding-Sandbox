@@ -45,7 +45,7 @@ const FileIcon: React.FC<FileIconProps> = ({ extension, size = 20 }) => {
   const ext = extension.toLowerCase();
 
   const iconMap: Record<string, { icon: JSX.Element; color: string }> = {
-    folder: { icon: <FaFolder size={size} />, color: '#7db6ff' }, // <-- folder key
+    folder: { icon: <FaFolder size={size} />, color: '#5A7DA6' },
     js: { icon: <FaJs size={size} />, color: '#e6c84f' },
     jsx: { icon: <FaReact size={size} />, color: '#7ecfff' },
     ts: { icon: <SiTypescript size={size} />, color: '#5a9fd4' },

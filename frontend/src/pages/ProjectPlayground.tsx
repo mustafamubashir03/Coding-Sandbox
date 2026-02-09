@@ -11,7 +11,7 @@ const { Sider, Content, Footer } = Layout;
 
 const ProjectPlayground = () => {
   const { projectId } = useParams();
-  const { setEditorSocket } = useEditorSocketStore();
+  const { editorSocket, setEditorSocket } = useEditorSocketStore();
   useEffect(() => {
     if (!projectId) {
       return;
@@ -28,6 +28,13 @@ const ProjectPlayground = () => {
     };
   }, [setEditorSocket, projectId]);
   console.log(projectId);
+  editorSocket?.on('writeFileSuccess', (data) => {
+    console.log(data);
+    editorSocket.emit('readFile', {
+      projectId,
+      pathToFileFolder: data?.path,
+    });
+  });
 
   return (
     <Layout style={{ height: '100vh', background: 'transparent' }}>

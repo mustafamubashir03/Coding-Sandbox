@@ -4,18 +4,31 @@ import FileIcon from '../../../atoms/FileIcon/FileIcon';
 import { fileFolderLengthCompute } from '../../../../utils/fileFolderLength';
 import { useEditorSocketStore } from '../../../../store/editorSocketStore';
 import { useParams } from 'react-router-dom';
+import { useFileContextMenuStore } from '../../../../store/fileContextMenu';
 
 export type fileFolderDataType = {
   name: string;
   relativePath: string;
   children?: fileFolderDataType[];
 };
-
 const TreeNode = ({ fileFolderData }: { fileFolderData: fileFolderDataType | null }) => {
   const { projectId } = useParams();
+  const { setIsFileMenuContextOpen, setFile, setX, setY } = useFileContextMenuStore();
   const [visibility, setVisibility] = useState<{ [key: string]: boolean }>({});
   const [hovered, setHovered] = useState<string | null>(null);
   const { editorSocket } = useEditorSocketStore();
+
+  const handleContextMenuForFiles = (
+    e: React.MouseEvent<HTMLDivElement, MouseEvent>,
+    path: string,
+  ) => {
+    console.log('double');
+    e.preventDefault();
+    setFile(path);
+    setX(e.clientX);
+    setY(e.clientY);
+    setIsFileMenuContextOpen(true);
+  };
 
   const toggleVisibility = (name: string) => {
     setVisibility((prev) => ({
@@ -26,7 +39,6 @@ const TreeNode = ({ fileFolderData }: { fileFolderData: fileFolderDataType | nul
 
   const hasChildren = fileFolderData?.children && fileFolderData.children.length > 0;
   const handleFileClick = (fileFolderData: fileFolderDataType) => {
-    console.log(fileFolderData);
     editorSocket?.emit('readFile', {
       projectId,
       pathToFileFolder: fileFolderData?.relativePath,
@@ -68,13 +80,15 @@ const TreeNode = ({ fileFolderData }: { fileFolderData: fileFolderDataType | nul
           <FaChevronRight
             style={{
               fontSize: '14px',
-              color: '#61dafb',
+              color: 'lightblue',
               transition: 'transform 0.2s ease',
               transform: visibility[fileFolderData?.name] ? 'rotate(90deg)' : 'rotate(0deg)',
             }}
           />
           <FileIcon extension={fileFolderLengthCompute(fileFolderData!)} size={18} />
-          <span style={{ flexGrow: 1 }}>{fileFolderData?.name}</span>
+          <span style={{ flexGrow: 1, color: 'lightblue', fontWeight: 'bold' }}>
+            {fileFolderData?.name}
+          </span>
         </button>
       ) : (
         <div
@@ -95,6 +109,7 @@ const TreeNode = ({ fileFolderData }: { fileFolderData: fileFolderDataType | nul
           }}
           onMouseEnter={() => setHovered(fileFolderData?.name || null)}
           onMouseLeave={() => setHovered(null)}
+          onContextMenu={(e) => handleContextMenuForFiles(e, fileFolderData?.relativePath || '')}
         >
           <div
             style={{
@@ -107,7 +122,7 @@ const TreeNode = ({ fileFolderData }: { fileFolderData: fileFolderDataType | nul
           </div>
           <p
             onClick={() => handleFileClick(fileFolderData!)}
-            style={{ margin: 0, lineHeight: 1.2 }}
+            style={{ margin: 0, lineHeight: 1.2, color: 'lightblue' }}
           >
             {fileFolderData?.name}
           </p>

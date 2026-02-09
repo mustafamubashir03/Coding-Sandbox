@@ -14,6 +14,7 @@ export const useEditorSocketStore = create<editorSocketInterface>((set) => {
       incomingSocket?.on('readFileSuccess', (data) => {
         activeFileTabSetter(data?.path, data?.value, '');
       });
+
       set({ editorSocket: incomingSocket });
     },
   };
