@@ -1,6 +1,6 @@
 import { useParams } from 'react-router-dom';
 import { useEditorSocketStore } from '../../../../store/editorSocketStore';
-import { useFileContextMenuStore } from '../../../../store/fileContextMenu';
+import { useFileContextMenuStore } from '../../../../store/fileContextMenuStore';
 import FileContextMenuButton from '../../../atoms/FileContextMenuButton/FileContextMenuButton';
 import { useTreeStructureStore } from '../../../../store/treeStructureStore';
 
@@ -37,7 +37,6 @@ const FileContextMenu = ({ x, y, path }: { x: number; y: number; path: string })
       0 10px 35px rgba(0, 0, 0, 0.38),
       inset 0 1px 0 rgba(255, 255, 255, 0.05)
     `,
-
         padding: '6px',
       }}
     >

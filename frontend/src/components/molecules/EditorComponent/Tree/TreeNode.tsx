@@ -4,7 +4,7 @@ import FileIcon from '../../../atoms/FileIcon/FileIcon';
 import { fileFolderLengthCompute } from '../../../../utils/fileFolderLength';
 import { useEditorSocketStore } from '../../../../store/editorSocketStore';
 import { useParams } from 'react-router-dom';
-import { useFileContextMenuStore } from '../../../../store/fileContextMenu';
+import { useFileContextMenuStore } from '../../../../store/fileContextMenuStore';
 
 export type fileFolderDataType = {
   name: string;

@@ -2,7 +2,7 @@ import { useParams } from 'react-router-dom';
 import { useTreeStructureStore } from '../../../store/treeStructureStore';
 import { useEffect } from 'react';
 import TreeNode from '../../molecules/EditorComponent/Tree/TreeNode';
-import { useFileContextMenuStore } from '../../../store/fileContextMenu';
+import { useFileContextMenuStore } from '../../../store/fileContextMenuStore';
 import FileContextMenu from '../../molecules/EditorComponent/ContextMenu/FileContextMenu';
 
 const TreeStructure = () => {

@@ -3,6 +3,8 @@ import appGlassTheme from '../../../themes/appGlassTheme.json';
 import { useActiveFileTabStore } from '../../../store/activeFileTabStore';
 import { useEditorSocketStore } from '../../../store/editorSocketStore';
 import { useParams } from 'react-router-dom';
+import { extensionToFiletype } from '../../../utils/extensionToFiletype';
+
 let timerId: ReturnType<typeof setTimeout> | null = null;
 const EditorComponent = () => {
   const { editorSocket } = useEditorSocketStore();
@@ -22,18 +24,24 @@ const EditorComponent = () => {
       });
     }, 2000);
   };
+  console.log(activeFileTab?.extension)
 
   return (
     <Editor
       height="80vh"
       width="100%"
-      defaultLanguage="react"
+      key={activeFileTab?.path}
+      language={extensionToFiletype(activeFileTab?.extension)}
       defaultValue="// Welcome to DevPlayground"
       value={activeFileTab?.value}
       onChange={handleChanges}
       theme="app-glass"
       beforeMount={(monaco) => {
         monaco.editor.defineTheme('app-glass', appGlassTheme);
+        monaco.languages.typescript.javascriptDefaults.setCompilerOptions({
+          jsx: monaco.languages.typescript.JsxEmit.React,
+          allowNonTsExtensions: true,
+        });
       }}
       options={{
         fontSize: 18,
