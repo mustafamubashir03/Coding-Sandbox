@@ -6,6 +6,7 @@ import TreeStructure from '../components/organisms/TreeStructure/TreeStructure';
 import { useEditorSocketStore } from '../store/editorSocketStore';
 import { useEffect } from 'react';
 import { io } from 'socket.io-client';
+import Terminal from '../components/molecules/EditorComponent/Terminal/TerminalComponent';
 
 const { Sider, Content, Footer } = Layout;
 
@@ -70,10 +71,9 @@ const ProjectPlayground = () => {
           </div>
         </Content>
 
-        {/* TERMINAL */}
         <Footer
           style={{
-            height: '28vh',
+            height: '25vh',
             background: 'transparent',
             backdropFilter: 'blur(12px)',
             borderTop: '1px solid rgba(255,255,255,0.06)',
@@ -81,7 +81,7 @@ const ProjectPlayground = () => {
             color: '#aaa',
           }}
         >
-          Terminal
+          <Terminal />
         </Footer>
       </Layout>
 
