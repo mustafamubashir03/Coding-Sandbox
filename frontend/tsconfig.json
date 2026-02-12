@@ -2,7 +2,8 @@
   "files": [],
   "compilerOptions": {
     "resolveJsonModule": true,
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "typeRoots": ["./node_modules/@types", "./src/types"]
   },
   "references": [{ "path": "./tsconfig.app.json" }, { "path": "./tsconfig.node.json" }]
 }

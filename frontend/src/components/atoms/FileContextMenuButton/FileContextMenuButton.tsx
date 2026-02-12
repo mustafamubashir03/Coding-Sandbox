@@ -1,10 +1,13 @@
+import type React from "react";
+
 type FileContextMenuButtonProps = {
   label: string;
+  Icon?:React.ElementType
   onClick?: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
   danger?: boolean;
 };
 
-const FileContextMenuButton = ({ label, onClick, danger = false }: FileContextMenuButtonProps) => {
+const FileContextMenuButton = ({ label, Icon, onClick, danger = false }: FileContextMenuButtonProps) => {
   return (
     <button
       onClick={onClick}
@@ -14,6 +17,8 @@ const FileContextMenuButton = ({ label, onClick, danger = false }: FileContextMe
 
         display: 'flex',
         alignItems: 'center',
+        gap:'8px',
+        justifyContent:"start",
 
         padding: '6px 10px',
         fontSize: '12.5px',
@@ -23,7 +28,7 @@ const FileContextMenuButton = ({ label, onClick, danger = false }: FileContextMe
         fontFamily:
           'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Ubuntu, sans-serif',
 
-        color: danger ? '#ff6b6b' : '#d7e3f4',
+        color: danger ? '#ff6b6b' : '#cfe3ff',
         cursor: 'pointer',
 
         borderRadius: '6px',
@@ -34,7 +39,7 @@ const FileContextMenuButton = ({ label, onClick, danger = false }: FileContextMe
       onMouseEnter={(e) => {
         e.currentTarget.style.background = danger
           ? 'rgba(255, 107, 107, 0.14)'
-          : 'rgba(125, 182, 255, 0.14)';
+          : 'rgba(55, 121, 207, 0.44)';
       }}
       onMouseLeave={(e) => {
         e.currentTarget.style.background = 'transparent';
@@ -42,9 +47,10 @@ const FileContextMenuButton = ({ label, onClick, danger = false }: FileContextMe
       onMouseDown={(e) => {
         e.currentTarget.style.background = danger
           ? 'rgba(255, 107, 107, 0.22)'
-          : 'rgba(125, 182, 255, 0.22)';
+          : 'rgba(94, 155, 235, 0.83)';
       }}
     >
+      {Icon && <Icon/>}
       {label}
     </button>
   );

@@ -46,7 +46,6 @@ const ProjectPlayground = () => {
           background: 'transparent',
           backdropFilter: 'blur(12px)',
           borderRight: '1px solid rgba(255,255,255,0.06)',
-          overflow: 'auto',
         }}
         breakpoint="lg"
         collapsedWidth={0}
@@ -75,8 +74,8 @@ const ProjectPlayground = () => {
         <Footer
           style={{
             height: '28vh',
-            background: 'rgba(10,10,10,0.7)',
-            backdropFilter: 'blur(10px)',
+            background: 'transparent',
+            backdropFilter: 'blur(12px)',
             borderTop: '1px solid rgba(255,255,255,0.06)',
             padding: '8px',
             color: '#aaa',
@@ -91,7 +90,7 @@ const ProjectPlayground = () => {
         width={360}
         theme="dark"
         style={{
-          background: 'rgba(20,20,20,0.6)',
+          background: 'transparent',
           backdropFilter: 'blur(12px)',
           borderLeft: '1px solid rgba(255,255,255,0.06)',
         }}

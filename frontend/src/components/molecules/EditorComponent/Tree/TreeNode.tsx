@@ -5,6 +5,8 @@ import { fileFolderLengthCompute } from '../../../../utils/fileFolderLength';
 import { useEditorSocketStore } from '../../../../store/editorSocketStore';
 import { useParams } from 'react-router-dom';
 import { useFileContextMenuStore } from '../../../../store/fileContextMenuStore';
+import { useFolderContextMenuStore } from '../../../../store/folderContextMenuStore';
+
 
 export type fileFolderDataType = {
   name: string;
@@ -13,7 +15,8 @@ export type fileFolderDataType = {
 };
 const TreeNode = ({ fileFolderData }: { fileFolderData: fileFolderDataType | null }) => {
   const { projectId } = useParams();
-  const { setIsFileMenuContextOpen, setFile, setX, setY } = useFileContextMenuStore();
+  const { setIsFileMenuContextOpen, setFile, setX:setFileX, setY:setFileY } = useFileContextMenuStore();
+  const { setIsFolderMenuContextOpen, setFolder, setX:setFolderX, setY:setFolderY } =  useFolderContextMenuStore()
   const [visibility, setVisibility] = useState<{ [key: string]: boolean }>({});
   const [hovered, setHovered] = useState<string | null>(null);
   const { editorSocket } = useEditorSocketStore();
@@ -22,12 +25,21 @@ const TreeNode = ({ fileFolderData }: { fileFolderData: fileFolderDataType | nul
     e: React.MouseEvent<HTMLDivElement, MouseEvent>,
     path: string,
   ) => {
-    console.log('double');
     e.preventDefault();
     setFile(path);
-    setX(e.clientX);
-    setY(e.clientY);
+    setFileX(e.clientX);
+    setFileY(e.clientY);
     setIsFileMenuContextOpen(true);
+  };
+  const handleContextMenuForFolders = (
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+    path: string,
+  ) => {
+    e.preventDefault();
+    setFolder(path);
+    setFolderX(e.clientX);
+    setFolderY(e.clientY);
+    setIsFolderMenuContextOpen(true);
   };
 
   const toggleVisibility = (name: string) => {
@@ -37,7 +49,7 @@ const TreeNode = ({ fileFolderData }: { fileFolderData: fileFolderDataType | nul
     }));
   };
 
-  const hasChildren = fileFolderData?.children && fileFolderData.children.length > 0;
+  const hasChildren = fileFolderData?.children !== undefined
   const handleFileClick = (fileFolderData: fileFolderDataType) => {
     editorSocket?.emit('readFile', {
       projectId,
@@ -58,6 +70,7 @@ const TreeNode = ({ fileFolderData }: { fileFolderData: fileFolderDataType | nul
       {hasChildren ? (
         <button
           onClick={() => toggleVisibility(fileFolderData?.name)}
+          onContextMenu={(e) => handleContextMenuForFolders( e, fileFolderData?.relativePath || '')}
           style={{
             display: 'flex',
             alignItems: 'center',

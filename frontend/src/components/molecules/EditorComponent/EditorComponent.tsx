@@ -38,10 +38,6 @@ const EditorComponent = () => {
       theme="app-glass"
       beforeMount={(monaco) => {
         monaco.editor.defineTheme('app-glass', appGlassTheme);
-        monaco.languages.typescript.javascriptDefaults.setCompilerOptions({
-          jsx: monaco.languages.typescript.JsxEmit.React,
-          allowNonTsExtensions: true,
-        });
       }}
       options={{
         fontSize: 18,
