@@ -8,7 +8,7 @@ interface ModalState {
   okText?: string;
   cancelText?: string;
   inputValue?: string;
-  placeholder?: string; 
+  placeholder?: string;
   onOk?: (inputValue?: string) => void | Promise<void>;
   onCancel?: () => void | Promise<void>;
   width?: number;

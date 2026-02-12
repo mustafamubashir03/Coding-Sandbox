@@ -4,15 +4,14 @@ import { useFileContextMenuStore } from '../../../../store/fileContextMenuStore'
 import FileContextMenuButton from '../../../atoms/FileContextMenuButton/FileContextMenuButton';
 import { useTreeStructureStore } from '../../../../store/treeStructureStore';
 import { useModalStore } from '../../../../store/modalStore';
-import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
-
+import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
 
 const FileContextMenu = ({ x, y, path }: { x: number; y: number; path: string }) => {
   const { setIsFileMenuContextOpen } = useFileContextMenuStore();
   const { projectId } = useParams();
   const { editorSocket } = useEditorSocketStore();
   const { setTreeStructure } = useTreeStructureStore();
-  const {openModal} = useModalStore()
+  const { openModal } = useModalStore();
   const handleFileDelete = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     e.preventDefault();
     editorSocket?.emit('deleteFile', {
@@ -21,35 +20,35 @@ const FileContextMenu = ({ x, y, path }: { x: number; y: number; path: string })
     });
   };
 
-  const handleRenameFile = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>)=>{
-    e.preventDefault()
+  const handleRenameFile = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    e.preventDefault();
     openModal({
-      title:`Rename File ${path.split('/').pop()}`,
-      content:"Enter the name of file",
-      okText:"Rename File",
-      width:600,
-      cancelText:"Cancel",
-      onOk:(inputValue)=>{
-        if(inputValue){
+      title: `Rename File ${path.split('/').pop()}`,
+      content: 'Enter the name of file',
+      okText: 'Rename File',
+      width: 600,
+      cancelText: 'Cancel',
+      onOk: (inputValue) => {
+        if (inputValue) {
           editorSocket?.emit('renameFile', {
             pathToFileFolder: path,
             projectId,
-            newFileName:inputValue
+            newFileName: inputValue,
           });
         }
-      }
-  })
-}
+      },
+    });
+  };
   editorSocket?.on('deleteFileSuccess', () => {
     setIsFileMenuContextOpen(false);
     setTreeStructure(projectId || '');
-    open('success',"Changes made","File has been successfully deleted")
+    open('success', 'Changes made', 'File has been successfully deleted');
   });
-  editorSocket?.on('renameFileSuccess',()=>{
+  editorSocket?.on('renameFileSuccess', () => {
     setIsFileMenuContextOpen(false);
     setTreeStructure(projectId || '');
-    open('success',"Changes made","File has been successfully renamed")
-  })
+    open('success', 'Changes made', 'File has been successfully renamed');
+  });
   return (
     <div
       onMouseLeave={() => setIsFileMenuContextOpen(false)}
@@ -77,11 +76,7 @@ const FileContextMenu = ({ x, y, path }: { x: number; y: number; path: string })
         onClick={handleFileDelete}
       />
 
-      <FileContextMenuButton
-        label="Rename file"
-        Icon={EditOutlined}
-        onClick={handleRenameFile}
-      />
+      <FileContextMenuButton label="Rename file" Icon={EditOutlined} onClick={handleRenameFile} />
     </div>
   );
 };

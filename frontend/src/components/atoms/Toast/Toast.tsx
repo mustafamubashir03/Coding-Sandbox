@@ -9,7 +9,7 @@ const Toast: React.FC = () => {
   const openNotificationWithIcon = (
     type: NotificationType,
     title: string,
-    description?: string
+    description?: string,
   ) => {
     api[type]({
       message: title,
@@ -37,11 +37,7 @@ const Toast: React.FC = () => {
             fontWeight: 500,
           }}
           onClick={() =>
-            openNotificationWithIcon(
-              'success',
-              'Success!',
-              'Operation completed successfully'
-            )
+            openNotificationWithIcon('success', 'Success!', 'Operation completed successfully')
           }
         >
           Success
@@ -54,11 +50,7 @@ const Toast: React.FC = () => {
             fontWeight: 500,
           }}
           onClick={() =>
-            openNotificationWithIcon(
-              'info',
-              'Info',
-              'This is some informational message'
-            )
+            openNotificationWithIcon('info', 'Info', 'This is some informational message')
           }
         >
           Info
@@ -71,11 +63,7 @@ const Toast: React.FC = () => {
             fontWeight: 500,
           }}
           onClick={() =>
-            openNotificationWithIcon(
-              'warning',
-              'Warning',
-              'Watch out for this warning'
-            )
+            openNotificationWithIcon('warning', 'Warning', 'Watch out for this warning')
           }
         >
           Warning
@@ -88,11 +76,7 @@ const Toast: React.FC = () => {
             fontWeight: 500,
           }}
           onClick={() =>
-            openNotificationWithIcon(
-              'error',
-              'Error',
-              'An error occurred during the operation'
-            )
+            openNotificationWithIcon('error', 'Error', 'An error occurred during the operation')
           }
         >
           Error

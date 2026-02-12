@@ -1,13 +1,18 @@
-import type React from "react";
+import type React from 'react';
 
 type FileContextMenuButtonProps = {
   label: string;
-  Icon?:React.ElementType
+  Icon?: React.ElementType;
   onClick?: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
   danger?: boolean;
 };
 
-const FileContextMenuButton = ({ label, Icon, onClick, danger = false }: FileContextMenuButtonProps) => {
+const FileContextMenuButton = ({
+  label,
+  Icon,
+  onClick,
+  danger = false,
+}: FileContextMenuButtonProps) => {
   return (
     <button
       onClick={onClick}
@@ -17,8 +22,8 @@ const FileContextMenuButton = ({ label, Icon, onClick, danger = false }: FileCon
 
         display: 'flex',
         alignItems: 'center',
-        gap:'8px',
-        justifyContent:"start",
+        gap: '8px',
+        justifyContent: 'start',
 
         padding: '6px 10px',
         fontSize: '12.5px',
@@ -50,7 +55,7 @@ const FileContextMenuButton = ({ label, Icon, onClick, danger = false }: FileCon
           : 'rgba(94, 155, 235, 0.83)';
       }}
     >
-      {Icon && <Icon/>}
+      {Icon && <Icon />}
       {label}
     </button>
   );

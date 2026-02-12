@@ -12,7 +12,7 @@ export const useEditorSocketStore = create<editorSocketInterface>((set) => {
     setEditorSocket: (incomingSocket: Socket | null) => {
       const activeFileTabSetter = useActiveFileTabStore.getState().setActiveFileTab;
       incomingSocket?.on('readFileSuccess', (data) => {
-        const fileExtension = data?.path.split('.').pop()
+        const fileExtension = data?.path.split('.').pop();
         activeFileTabSetter(data?.path, data?.value, fileExtension);
       });
 

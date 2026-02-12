@@ -15,12 +15,12 @@ const TreeStructure = () => {
     y: fileContextY,
     file,
   } = useFileContextMenuStore();
- const {
-  isFolderMenuContextOpen,
-  x:folderContextX,
-  y:folderContextY,
-  folder
- } =  useFolderContextMenuStore()
+  const {
+    isFolderMenuContextOpen,
+    x: folderContextX,
+    y: folderContextY,
+    folder,
+  } = useFolderContextMenuStore();
   const { projectId } = useParams();
   useEffect(() => {
     const getTreeStructure = async () => {

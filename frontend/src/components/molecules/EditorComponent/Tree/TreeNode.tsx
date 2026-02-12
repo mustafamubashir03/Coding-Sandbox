@@ -7,7 +7,6 @@ import { useParams } from 'react-router-dom';
 import { useFileContextMenuStore } from '../../../../store/fileContextMenuStore';
 import { useFolderContextMenuStore } from '../../../../store/folderContextMenuStore';
 
-
 export type fileFolderDataType = {
   name: string;
   relativePath: string;
@@ -15,8 +14,18 @@ export type fileFolderDataType = {
 };
 const TreeNode = ({ fileFolderData }: { fileFolderData: fileFolderDataType | null }) => {
   const { projectId } = useParams();
-  const { setIsFileMenuContextOpen, setFile, setX:setFileX, setY:setFileY } = useFileContextMenuStore();
-  const { setIsFolderMenuContextOpen, setFolder, setX:setFolderX, setY:setFolderY } =  useFolderContextMenuStore()
+  const {
+    setIsFileMenuContextOpen,
+    setFile,
+    setX: setFileX,
+    setY: setFileY,
+  } = useFileContextMenuStore();
+  const {
+    setIsFolderMenuContextOpen,
+    setFolder,
+    setX: setFolderX,
+    setY: setFolderY,
+  } = useFolderContextMenuStore();
   const [visibility, setVisibility] = useState<{ [key: string]: boolean }>({});
   const [hovered, setHovered] = useState<string | null>(null);
   const { editorSocket } = useEditorSocketStore();
@@ -49,7 +58,7 @@ const TreeNode = ({ fileFolderData }: { fileFolderData: fileFolderDataType | nul
     }));
   };
 
-  const hasChildren = fileFolderData?.children !== undefined
+  const hasChildren = fileFolderData?.children !== undefined;
   const handleFileClick = (fileFolderData: fileFolderDataType) => {
     editorSocket?.emit('readFile', {
       projectId,
@@ -70,7 +79,7 @@ const TreeNode = ({ fileFolderData }: { fileFolderData: fileFolderDataType | nul
       {hasChildren ? (
         <button
           onClick={() => toggleVisibility(fileFolderData?.name)}
-          onContextMenu={(e) => handleContextMenuForFolders( e, fileFolderData?.relativePath || '')}
+          onContextMenu={(e) => handleContextMenuForFolders(e, fileFolderData?.relativePath || '')}
           style={{
             display: 'flex',
             alignItems: 'center',
