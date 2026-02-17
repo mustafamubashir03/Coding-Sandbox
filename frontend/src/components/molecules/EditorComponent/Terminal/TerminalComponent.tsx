@@ -3,7 +3,7 @@ import { Terminal } from '@xterm/xterm';
 import { FitAddon } from '@xterm/addon-fit';
 import '@xterm/xterm/css/xterm.css';
 import { useParams } from 'react-router-dom';
-import {AttachAddon} from "@xterm/addon-attach"
+import { AttachAddon } from '@xterm/addon-attach';
 
 type Props = {
   className?: string;
@@ -24,51 +24,44 @@ const TerminalComponent = ({ className }: Props) => {
       fontSize: 14,
       lineHeight: 1.3,
       fontFamily: 'JetBrains Mono, Fira Code, Cascadia Code, Consolas, monospace',
-    
+
       theme: {
         background: '#0a0f1a',
         foreground: '#d6e2ff',
-    
+
         cursor: '#60a5fa',
         cursorAccent: '#ffffff',
-    
+
         selectionBackground: '#1d4ed855',
-    
+
         black: '#0f172a',
         red: '#ef4444',
-    
-        // ⭐ CRITICAL: DARK TEAL INSTEAD OF GREEN
+
         green: '#0b1220',
-    
+
         yellow: '#eab308',
         blue: '#60a5fa',
         magenta: '#8b5cf6',
         cyan: '#06b6d4',
         white: '#e2e8f0',
-    
-        // ⭐ ALSO FIX BRIGHT COLORS (VERY IMPORTANT)
+
         brightBlack: '#1e293b',
         brightRed: '#f87171',
-    
-        // ⭐ DARKER SAFE GREEN SLOT
+
         brightGreen: '#14b8a6',
-    
+
         brightYellow: '#facc15',
         brightBlue: '#60a5fa',
         brightMagenta: '#a78bfa',
         brightCyan: '#22d3ee',
         brightWhite: '#f8fafc',
       },
-    
+
       convertEol: true,
       scrollback: 5000,
       smoothScrollDuration: 80,
       allowTransparency: true,
     });
-    
-    
-    
-    
 
     const fitAddon = new FitAddon();
 
@@ -87,15 +80,14 @@ const TerminalComponent = ({ className }: Props) => {
     });
 
     resizeObserver.observe(containerRef.current);
-    const ws = new WebSocket(`ws://localhost:3000/terminal?projectId=${projectId}`)
-    ws.onopen = ()=>{
-      if(ws){
-        const attachAddon = new AttachAddon(ws)
-        term.loadAddon(attachAddon)
-        socket.current = ws
-
+    const ws = new WebSocket(`ws://localhost:3000/terminal?projectId=${projectId}`);
+    ws.onopen = () => {
+      if (ws) {
+        const attachAddon = new AttachAddon(ws);
+        term.loadAddon(attachAddon);
+        socket.current = ws;
       }
-    }
+    };
     // socket.current = io(`${import.meta.env.VITE_BACKEND_URL}/terminal`, {
     //   auth: {
     //     projectId,

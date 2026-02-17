@@ -25,7 +25,6 @@ const EditorComponent = () => {
     }, 2000);
   };
 
-
   return (
     <Editor
       height="80vh"
