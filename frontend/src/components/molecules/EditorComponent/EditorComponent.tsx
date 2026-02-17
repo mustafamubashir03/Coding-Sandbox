@@ -24,7 +24,7 @@ const EditorComponent = () => {
       });
     }, 2000);
   };
-  console.log(activeFileTab?.extension);
+
 
   return (
     <Editor

@@ -1,9 +1,9 @@
 import { useEffect, useRef } from 'react';
 import { Terminal } from '@xterm/xterm';
 import { FitAddon } from '@xterm/addon-fit';
-import { io, Socket } from 'socket.io-client';
 import '@xterm/xterm/css/xterm.css';
 import { useParams } from 'react-router-dom';
+import {AttachAddon} from "@xterm/addon-attach"
 
 type Props = {
   className?: string;
@@ -14,7 +14,7 @@ const TerminalComponent = ({ className }: Props) => {
   const terminalRef = useRef<Terminal | null>(null);
   const fitAddonRef = useRef<FitAddon | null>(null);
   const { projectId } = useParams();
-  const socket = useRef<Socket | null>(null);
+  const socket = useRef<WebSocket | null>(null);
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -24,29 +24,51 @@ const TerminalComponent = ({ className }: Props) => {
       fontSize: 14,
       lineHeight: 1.3,
       fontFamily: 'JetBrains Mono, Fira Code, Cascadia Code, Consolas, monospace',
-
+    
       theme: {
-        background: '#0f1117',
-        foreground: '#d7e3f4',
-        cursor: '#7db6ff',
+        background: '#0a0f1a',
+        foreground: '#d6e2ff',
+    
+        cursor: '#60a5fa',
         cursorAccent: '#ffffff',
-        selectionBackground: '#7db6ff33',
-
-        black: '#1e1e1e',
-        red: '#ff6b6b',
-        green: '#6bff95',
-        yellow: '#ffd76b',
-        blue: '#7db6ff',
-        magenta: '#c792ea',
-        cyan: '#5fd7ff',
-        white: '#d7e3f4',
+    
+        selectionBackground: '#1d4ed855',
+    
+        black: '#0f172a',
+        red: '#ef4444',
+    
+        // ⭐ CRITICAL: DARK TEAL INSTEAD OF GREEN
+        green: '#0b1220',
+    
+        yellow: '#eab308',
+        blue: '#60a5fa',
+        magenta: '#8b5cf6',
+        cyan: '#06b6d4',
+        white: '#e2e8f0',
+    
+        // ⭐ ALSO FIX BRIGHT COLORS (VERY IMPORTANT)
+        brightBlack: '#1e293b',
+        brightRed: '#f87171',
+    
+        // ⭐ DARKER SAFE GREEN SLOT
+        brightGreen: '#14b8a6',
+    
+        brightYellow: '#facc15',
+        brightBlue: '#60a5fa',
+        brightMagenta: '#a78bfa',
+        brightCyan: '#22d3ee',
+        brightWhite: '#f8fafc',
       },
-
+    
       convertEol: true,
       scrollback: 5000,
       smoothScrollDuration: 80,
       allowTransparency: true,
     });
+    
+    
+    
+    
 
     const fitAddon = new FitAddon();
 
@@ -65,48 +87,57 @@ const TerminalComponent = ({ className }: Props) => {
     });
 
     resizeObserver.observe(containerRef.current);
-    socket.current = io(`${import.meta.env.VITE_BACKEND_URL}/terminal`, {
-      auth: {
-        projectId,
-      },
-    });
+    const ws = new WebSocket(`ws://localhost:3000/terminal?projectId=${projectId}`)
+    ws.onopen = ()=>{
+      if(ws){
+        const attachAddon = new AttachAddon(ws)
+        term.loadAddon(attachAddon)
+        socket.current = ws
 
-    let currentLine = '';
-    socket?.current?.on('shell-output', (data) => {
-      switch (data) {
-        // ENTER
-        case '\r':
-          term.write('\r\n');
-          console.log('Command:', currentLine);
-          currentLine = '';
-          term.write('$ ');
-          break;
-
-        // BACKSPACE
-        case '\x7f':
-          if (currentLine.length > 0) {
-            currentLine = currentLine.slice(0, -1);
-            term.write('\b \b'); // erase char visually
-          }
-          break;
-
-        default:
-          currentLine += data;
-          term.write(data);
       }
-    });
+    }
+    // socket.current = io(`${import.meta.env.VITE_BACKEND_URL}/terminal`, {
+    //   auth: {
+    //     projectId,
+    //   },
+    // });
 
-    term.onData((data) => {
-      console.log(data);
-      socket?.current?.emit('shell-input', data);
-    });
+    // let currentLine = '';
+    // socket?.current?.on('shell-output', (data) => {
+    //   switch (data) {
+    //     // ENTER
+    //     case '\r':
+    //       term.write('\r\n');
+    //       console.log('Command:', currentLine);
+    //       currentLine = '';
+    //       term.write('$ ');
+    //       break;
+
+    //     // BACKSPACE
+    //     case '\x7f':
+    //       if (currentLine.length > 0) {
+    //         currentLine = currentLine.slice(0, -1);
+    //         term.write('\b \b'); // erase char visually
+    //       }
+    //       break;
+
+    //     default:
+    //       currentLine += data;
+    //       term.write(data);
+    //   }
+    // });
+
+    // term.onData((data) => {
+    //   console.log(data);
+    //   socket?.current?.emit('shell-input', data);
+    // });
 
     return () => {
       resizeObserver.disconnect();
       term.dispose();
       terminalRef.current = null;
       fitAddonRef.current = null;
-      socket.current?.disconnect();
+      // socket.current?.disconnect();
     };
   }, [projectId]);
 
