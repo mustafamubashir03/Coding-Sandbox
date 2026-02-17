@@ -20,10 +20,10 @@ export const createProjectService = async () => {
 export const getProjectTreeService = async (projectId: string) => {
   const projectPath = path.join(PROJECTS_ROOT, projectId);
   const tree = directoryTree(projectPath);
-  const toPosix = (p: string) => p.split(path.sep).join('/');
+  const toPosix = (p: string) => p?.split(path.sep).join('/');
   const normalize = (node: any) => ({
-    name: node.name,
-    relativePath: toPosix(path.relative(projectPath, node.path)),
+    name: node?.name,
+    relativePath: toPosix(path?.relative(projectPath, node?.path)),
     children: node.children?.map(normalize),
   });
 
