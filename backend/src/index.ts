@@ -2,16 +2,12 @@ import express from 'express';
 import cors from 'cors';
 import { PORT } from './config/serverConfig.js';
 import apiRouter from './routes/index.js';
-import { createServer, IncomingMessage } from 'node:http';
+import { createServer } from 'node:http';
+import './terminalApp.js';
 import chokidar from 'chokidar';
 import { Server } from 'socket.io';
 import { handleEditorSocketEvents } from './socketHandlers/editorHandler.js';
-import { handleContainerCreate } from './containers/handleContainerCreate.js';
-import { WebSocketServer } from 'ws';
-import { WebSocket } from 'ws';
-import { Container } from 'dockerode';
-import { Socket as NetSocket } from 'node:net';
-import { handleTerminalCreation } from './containers/handleTerminalCreation.js';
+import { getContainerPort, listContainer } from './containers/handleContainerCreate.js';
 
 const app = express();
 const server = createServer(app);
@@ -51,6 +47,13 @@ editorNamespace.on('connection', (socket) => {
       console.log(event, path);
     });
   }
+  socket.on('getPort', async ({ containerName }: { containerName: string }) => {
+    console.log('port was asked');
+    const port = await getContainerPort(containerName);
+    socket.emit('getPortSuccess', {
+      port,
+    });
+  });
   handleEditorSocketEvents(socket, editorNamespace);
   socket.on('disconnect', async () => {
     if (watcher) {
@@ -60,46 +63,8 @@ editorNamespace.on('connection', (socket) => {
   });
 });
 
-// terminalNamespace.on('connection', (socket) => {
-//   const { projectId } = socket.handshake.auth;
-//   console.log('terminal connected', socket.id);
-//   socket.on('shell-input', (data) => {
-//     console.log(data);
-//     terminalNamespace.emit('shell-output', data);
-//   });
-//   socket.on('disconnect', () => {
-//     console.log('terminal disconnected');
-//   });
-//   handleContainerCreate({ projectId, socket });
-// });
-
 server.listen(PORT, () => {
   console.log('Server has been started at port', PORT);
-});
-
-const webSocketTerminal = new WebSocketServer({
-  noServer: true,
-});
-
-server.on('upgrade', (req: IncomingMessage, tcpSocket: NetSocket, head: Buffer) => {
-  /**
-   * req: incoming http request
-   * tcpSocket: TCP socket..not to confuse with web socket ...this is just a tcp connection
-   * head: Buffer containing first packet of the upgraded stream
-   *
-   */
-  const isTerminal = req.url?.includes('/terminal');
-
-  if (isTerminal) {
-    console.log('url', req.url);
-
-    const projectId = req.url?.split('=')[1];
-    console.log(projectId);
-
-    if (projectId) {
-      handleContainerCreate({ projectId, webSocketTerminal, req, tcpSocket, head });
-    }
-  }
 });
 
 /**
@@ -109,15 +74,3 @@ server.on('upgrade', (req: IncomingMessage, tcpSocket: NetSocket, head: Buffer) 
  * and then set the ws connection with that docker container. Then it would emit and event "connection"
  * indicating the client the form connecion  with this container to further execute the container.
  */
-webSocketTerminal.on('connection', (ws: WebSocket, req: IncomingMessage, container: Container) => {
-  console.log('Terminal connected', ws, req, container);
-  handleTerminalCreation({ ws, container });
-  ws.on('close', () => {
-    container.remove({ force: true }, (err, data) => {
-      if (err) {
-        console.log('Error while removing container', err);
-      }
-      console.log('Container removed', data);
-    });
-  });
-});
