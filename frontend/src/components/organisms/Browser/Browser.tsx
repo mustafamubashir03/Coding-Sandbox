@@ -1,10 +1,10 @@
-import { useParams } from "react-router-dom";
-import { usePortStore } from "../../../store/portStore";
-import { useEditorSocketStore } from "../../../store/editorSocketStore";
-import { Input } from "antd";
-import { useEffect, useRef, useState } from "react";
-import { useTerminalSocketStore } from "../../../store/terminalSocketStore";
-import { SyncOutlined } from "@ant-design/icons";
+import { useParams } from 'react-router-dom';
+import { usePortStore } from '../../../store/portStore';
+import { useEditorSocketStore } from '../../../store/editorSocketStore';
+import { Input } from 'antd';
+import { useEffect, useRef, useState } from 'react';
+import { useTerminalSocketStore } from '../../../store/terminalSocketStore';
+import { SyncOutlined } from '@ant-design/icons';
 
 const Browser = () => {
   const { projectId } = useParams();
@@ -20,16 +20,16 @@ const Browser = () => {
     if (!editorSocket || !projectId || !terminalSocket || port !== null) return;
 
     const timeout = setTimeout(() => {
-      editorSocket.emit("getPort", { containerName: projectId });
+      editorSocket.emit('getPort', { containerName: projectId });
     }, 3000);
 
     const handlePort = ({ port }: { port: number }) => setPort(port);
 
-    editorSocket.once("getPortSuccess", handlePort);
+    editorSocket.once('getPortSuccess', handlePort);
 
     return () => {
       clearTimeout(timeout);
-      editorSocket.off("getPortSuccess", handlePort);
+      editorSocket.off('getPortSuccess', handlePort);
     };
   }, [editorSocket, projectId, terminalSocket, port, setPort]);
 
@@ -42,7 +42,7 @@ const Browser = () => {
     const pollServer = async () => {
       if (cancelled) return;
       try {
-        const res = await fetch(`http://localhost:${port}`, { method: "HEAD" });
+        const res = await fetch(`http://localhost:${port}`, { method: 'HEAD' });
         if (res.ok) {
           setIframeSrc(`http://localhost:${port}`);
         } else if (!cancelled) {
@@ -67,44 +67,44 @@ const Browser = () => {
   return (
     <div
       style={{
-        width: "100%",
-        height: "100%",
-        display: "flex",
-        flexDirection: "column",
-        background: "#0a0a0a",
+        width: '100%',
+        height: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+        background: '#0a0a0a',
       }}
     >
       {/* URL input with refresh icon */}
       <Input
-        value={iframeSrc ?? (port ? `http://localhost:${port}` : "Waiting for container port...")}
+        value={iframeSrc ?? (port ? `http://localhost:${port}` : 'Waiting for container port...')}
         readOnly
         prefix={
           <SyncOutlined
             onClick={handleRefresh}
             spin={!iframeSrc}
-            style={{ cursor: "pointer", color: "#00e5ff" }}
+            style={{ cursor: 'pointer', color: '#00e5ff' }}
           />
         }
         style={{
           height: 32,
           borderRadius: 0,
-          border: "none",
-          borderBottom: "1px solid rgba(255,255,255,0.08)",
-          background: "#111",
-          color: "#aaa",
-          fontFamily: "Fira Code",
-          padding: "0 8px",
+          border: 'none',
+          borderBottom: '1px solid rgba(255,255,255,0.08)',
+          background: '#111',
+          color: '#aaa',
+          fontFamily: 'Fira Code',
+          padding: '0 8px',
         }}
       />
 
       {/* Iframe / loader container */}
-      <div style={{ flex: 1, position: "relative" }}>
+      <div style={{ flex: 1, position: 'relative' }}>
         {!iframeSrc && <ModernLoader />}
         {iframeSrc && (
           <iframe
             ref={iframeRef}
             src={iframeSrc}
-            style={{ width: "100%", height: "100%", border: "none" }}
+            style={{ width: '100%', height: '100%', border: 'none' }}
           />
         )}
       </div>
@@ -116,15 +116,15 @@ const Browser = () => {
 const ModernLoader = () => (
   <div
     style={{
-      position: "absolute",
+      position: 'absolute',
       inset: 0,
-      display: "flex",
-      flexDirection: "column",
-      alignItems: "center",
-      justifyContent: "center",
-      color: "#ccc",
-      fontFamily: "Fira Code",
-      textAlign: "center",
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      justifyContent: 'center',
+      color: '#ccc',
+      fontFamily: 'Fira Code',
+      textAlign: 'center',
       padding: 16,
     }}
   >
@@ -133,10 +133,10 @@ const ModernLoader = () => (
       style={{
         width: 48,
         height: 48,
-        border: "5px solid rgba(255,255,255,0.1)",
-        borderTop: "5px solid #00e5ff",
-        borderRadius: "50%",
-        animation: "spin 1s linear infinite",
+        border: '5px solid rgba(255,255,255,0.1)',
+        borderTop: '5px solid #00e5ff',
+        borderRadius: '50%',
+        animation: 'spin 1s linear infinite',
         marginBottom: 16,
       }}
     />

@@ -7,8 +7,8 @@ import { useEffect } from 'react';
 import { io } from 'socket.io-client';
 import Terminal from '../components/molecules/EditorComponent/Terminal/TerminalComponent';
 import { useTerminalSocketStore } from '../store/terminalSocketStore';
-import { Allotment } from "allotment";
-import "allotment/dist/style.css";
+import { Allotment } from 'allotment';
+import 'allotment/dist/style.css';
 import Browser from '../components/organisms/Browser/Browser';
 
 type TreeNodeData = {
@@ -16,67 +16,63 @@ type TreeNodeData = {
 };
 
 const ProjectPlayground = () => {
-  const { projectId } = useParams()
-  const { editorSocket, setEditorSocket } = useEditorSocketStore()
-  const { setTerminalSocket, clearTerminalSocket } = useTerminalSocketStore()
+  const { projectId } = useParams();
+  const { editorSocket, setEditorSocket } = useEditorSocketStore();
+  const { setTerminalSocket, clearTerminalSocket } = useTerminalSocketStore();
 
   // Socket Setup
   useEffect(() => {
-    if (!projectId) return
+    if (!projectId) return;
 
     const socket = io(`${import.meta.env.VITE_BACKEND_URL}/editor`, {
-      auth: { projectId }
-    })
+      auth: { projectId },
+    });
 
-    setEditorSocket(socket)
-    setTerminalSocket(projectId)
+    setEditorSocket(socket);
+    setTerminalSocket(projectId);
 
     return () => {
-      socket.disconnect()
-      setEditorSocket(null)
-      clearTerminalSocket()
-    }
-  }, [projectId,clearTerminalSocket,setEditorSocket,setTerminalSocket])
-
+      socket.disconnect();
+      setEditorSocket(null);
+      clearTerminalSocket();
+    };
+  }, [projectId, clearTerminalSocket, setEditorSocket, setTerminalSocket]);
 
   useEffect(() => {
-    if (!editorSocket || !projectId) return
+    if (!editorSocket || !projectId) return;
 
-    const handler = (data:TreeNodeData) => {
+    const handler = (data: TreeNodeData) => {
       editorSocket.emit('readFile', {
         projectId,
-        pathToFileFolder: data?.path
-      })
-    }
+        pathToFileFolder: data?.path,
+      });
+    };
 
-    editorSocket.on('writeFileSuccess', handler)
+    editorSocket.on('writeFileSuccess', handler);
 
     return () => {
-      editorSocket.off('writeFileSuccess', handler)
-    }
-  }, [editorSocket, projectId])
+      editorSocket.off('writeFileSuccess', handler);
+    };
+  }, [editorSocket, projectId]);
 
   return (
     <div
       style={{
-        height: "100vh",
-        width: "100%",
-        background: "transparent",
+        height: '100vh',
+        width: '100%',
+        background: 'transparent',
       }}
     >
       {/* MAIN HORIZONTAL SPLIT */}
-      <Allotment
-        defaultSizes={[300, 800, 360]}
-        separator
-      >
+      <Allotment defaultSizes={[300, 800, 360]} separator>
         {/* ================= LEFT TREE ================= */}
         <Allotment.Pane minSize={220} preferredSize={300}>
           <div
             style={{
-              height: "100%",
-              backdropFilter: "blur(12px)",
-              borderRight: "1px solid rgba(255,255,255,0.06)",
-              overflowY: "auto",
+              height: '100%',
+              backdropFilter: 'blur(12px)',
+              borderRight: '1px solid rgba(255,255,255,0.06)',
+              overflowY: 'auto',
             }}
           >
             <TreeStructure />
@@ -85,42 +81,34 @@ const ProjectPlayground = () => {
 
         {/* ================= CENTER COLUMN ================= */}
         <Allotment.Pane minSize={400}>
-          <Allotment
-            vertical
-            defaultSizes={[75, 25]}
-            separator
-          >
+          <Allotment vertical defaultSizes={[75, 25]} separator>
             {/* ===== EDITOR ===== */}
             <Allotment.Pane minSize={250}>
               <div
                 style={{
-                  height: "100%",
-                  display: "flex",
-                  flexDirection: "column",
-                  background: "rgba(30,30,30,0.55)",
-                  backdropFilter: "blur(14px)",
-                  overflow: "hidden",
+                  height: '100%',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  background: 'rgba(30,30,30,0.55)',
+                  backdropFilter: 'blur(14px)',
+                  overflow: 'hidden',
                 }}
               >
                 <EditorTabsBar />
 
-                <div style={{ flex: 1, overflow: "hidden" }}>
+                <div style={{ flex: 1, overflow: 'hidden' }}>
                   <EditorComponent />
                 </div>
               </div>
             </Allotment.Pane>
 
             {/* ===== TERMINAL ===== */}
-            <Allotment.Pane
-              minSize={160}
-              preferredSize="25%"
-              snap
-            >
+            <Allotment.Pane minSize={160} preferredSize="25%" snap>
               <div
                 style={{
-                  height: "100%",
-                  backdropFilter: "blur(12px)",
-                  borderTop: "1px solid rgba(255,255,255,0.06)",
+                  height: '100%',
+                  backdropFilter: 'blur(12px)',
+                  borderTop: '1px solid rgba(255,255,255,0.06)',
                   padding: 8,
                 }}
               >
@@ -134,12 +122,12 @@ const ProjectPlayground = () => {
         <Allotment.Pane minSize={280} preferredSize={360}>
           <div
             style={{
-              height: "100%",
-              display: "flex",
-              flexDirection: "column",
-              backdropFilter: "blur(12px)",
-              borderLeft: "1px solid rgba(255,255,255,0.06)",
-              overflow: "hidden",
+              height: '100%',
+              display: 'flex',
+              flexDirection: 'column',
+              backdropFilter: 'blur(12px)',
+              borderLeft: '1px solid rgba(255,255,255,0.06)',
+              overflow: 'hidden',
             }}
           >
             <Browser />
@@ -147,8 +135,7 @@ const ProjectPlayground = () => {
         </Allotment.Pane>
       </Allotment>
     </div>
-  )
-}
-
+  );
+};
 
 export default ProjectPlayground;
