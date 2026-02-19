@@ -1,4 +1,3 @@
-import { Layout } from 'antd';
 import { useParams } from 'react-router-dom';
 import EditorComponent from '../components/molecules/EditorComponent/EditorComponent';
 import EditorTabsBar from '../components/molecules/EditorComponent/EditorTabsBar/EditorTabsBar';
@@ -8,111 +7,148 @@ import { useEffect } from 'react';
 import { io } from 'socket.io-client';
 import Terminal from '../components/molecules/EditorComponent/Terminal/TerminalComponent';
 import { useTerminalSocketStore } from '../store/terminalSocketStore';
+import { Allotment } from "allotment";
+import "allotment/dist/style.css";
+import Browser from '../components/organisms/Browser/Browser';
 
-const { Sider, Content, Footer } = Layout;
+type TreeNodeData = {
+  path?: string;
+};
 
 const ProjectPlayground = () => {
-  const { projectId } = useParams();
-  const { editorSocket, setEditorSocket } = useEditorSocketStore();
-  const { setTerminalSocket, clearTerminalSocket } = useTerminalSocketStore();
-  const fetchPort = () => {
-    editorSocket?.emit('getPort', { containerName: projectId });
-  };
+  const { projectId } = useParams()
+  const { editorSocket, setEditorSocket } = useEditorSocketStore()
+  const { setTerminalSocket, clearTerminalSocket } = useTerminalSocketStore()
+
+  // Socket Setup
+  useEffect(() => {
+    if (!projectId) return
+
+    const socket = io(`${import.meta.env.VITE_BACKEND_URL}/editor`, {
+      auth: { projectId }
+    })
+
+    setEditorSocket(socket)
+    setTerminalSocket(projectId)
+
+    return () => {
+      socket.disconnect()
+      setEditorSocket(null)
+      clearTerminalSocket()
+    }
+  }, [projectId,clearTerminalSocket,setEditorSocket,setTerminalSocket])
+
 
   useEffect(() => {
-    if (!projectId) {
-      return;
-    }
-    const editorSocketConnection = io(`${import.meta.env.VITE_BACKEND_URL}/editor`, {
-      auth: {
+    if (!editorSocket || !projectId) return
+
+    const handler = (data:TreeNodeData) => {
+      editorSocket.emit('readFile', {
         projectId,
-      },
-    });
-    setEditorSocket(editorSocketConnection);
-    setTerminalSocket(projectId);
+        pathToFileFolder: data?.path
+      })
+    }
+
+    editorSocket.on('writeFileSuccess', handler)
+
     return () => {
-      editorSocketConnection.disconnect();
-      setEditorSocket(null);
-      clearTerminalSocket();
-    };
-  }, [setEditorSocket, projectId, clearTerminalSocket, setTerminalSocket]);
-  console.log(projectId);
-  editorSocket?.on('writeFileSuccess', (data) => {
-    console.log(data);
-    editorSocket.emit('readFile', {
-      projectId,
-      pathToFileFolder: data?.path,
-    });
-  });
+      editorSocket.off('writeFileSuccess', handler)
+    }
+  }, [editorSocket, projectId])
 
   return (
-    <Layout style={{ height: '100vh', background: 'transparent' }}>
-      {/* LEFT FILE TREE */}
-      <Sider
-        width={300}
-        theme="dark"
-        style={{
-          background: 'transparent',
-          backdropFilter: 'blur(12px)',
-          borderRight: '1px solid rgba(255,255,255,0.06)',
-          height: '100vh',
-          overflowY: 'auto',
-          overflowX: 'hidden',
-        }}
-        breakpoint="lg"
-        collapsedWidth={0}
+    <div
+      style={{
+        height: "100vh",
+        width: "100%",
+        background: "transparent",
+      }}
+    >
+      {/* MAIN HORIZONTAL SPLIT */}
+      <Allotment
+        defaultSizes={[300, 800, 360]}
+        separator
       >
-        <TreeStructure />
-      </Sider>
-
-      {/* CENTER COLUMN (EDITOR + TERMINAL) */}
-      <Layout style={{ background: 'transparent' }}>
-        {/* EDITOR AREA */}
-        <Content
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            background: 'rgba(30,30,30,0.55)',
-            backdropFilter: 'blur(14px)',
-          }}
-        >
-          <EditorTabsBar />
-          <div style={{ flex: 1, overflow: 'hidden' }}>
-            <EditorComponent />
+        {/* ================= LEFT TREE ================= */}
+        <Allotment.Pane minSize={220} preferredSize={300}>
+          <div
+            style={{
+              height: "100%",
+              backdropFilter: "blur(12px)",
+              borderRight: "1px solid rgba(255,255,255,0.06)",
+              overflowY: "auto",
+            }}
+          >
+            <TreeStructure />
           </div>
-        </Content>
+        </Allotment.Pane>
 
-        <Footer
-          style={{
-            height: '25vh',
-            background: 'transparent',
-            backdropFilter: 'blur(12px)',
-            borderTop: '1px solid rgba(255,255,255,0.06)',
-            padding: '8px',
-            color: '#aaa',
-          }}
-        >
-          <Terminal />
-        </Footer>
-      </Layout>
+        {/* ================= CENTER COLUMN ================= */}
+        <Allotment.Pane minSize={400}>
+          <Allotment
+            vertical
+            defaultSizes={[75, 25]}
+            separator
+          >
+            {/* ===== EDITOR ===== */}
+            <Allotment.Pane minSize={250}>
+              <div
+                style={{
+                  height: "100%",
+                  display: "flex",
+                  flexDirection: "column",
+                  background: "rgba(30,30,30,0.55)",
+                  backdropFilter: "blur(14px)",
+                  overflow: "hidden",
+                }}
+              >
+                <EditorTabsBar />
 
-      {/* RIGHT PREVIEW */}
-      <Sider
-        width={360}
-        theme="dark"
-        style={{
-          background: 'transparent',
-          backdropFilter: 'blur(12px)',
-          borderLeft: '1px solid rgba(255,255,255,0.06)',
-        }}
-        breakpoint="xl"
-        collapsedWidth={0}
-      >
-        <button onClick={fetchPort}>Get Port</button>
-        Preview
-      </Sider>
-    </Layout>
-  );
-};
+                <div style={{ flex: 1, overflow: "hidden" }}>
+                  <EditorComponent />
+                </div>
+              </div>
+            </Allotment.Pane>
+
+            {/* ===== TERMINAL ===== */}
+            <Allotment.Pane
+              minSize={160}
+              preferredSize="25%"
+              snap
+            >
+              <div
+                style={{
+                  height: "100%",
+                  backdropFilter: "blur(12px)",
+                  borderTop: "1px solid rgba(255,255,255,0.06)",
+                  padding: 8,
+                }}
+              >
+                <Terminal />
+              </div>
+            </Allotment.Pane>
+          </Allotment>
+        </Allotment.Pane>
+
+        {/* ================= RIGHT PREVIEW ================= */}
+        <Allotment.Pane minSize={280} preferredSize={360}>
+          <div
+            style={{
+              height: "100%",
+              display: "flex",
+              flexDirection: "column",
+              backdropFilter: "blur(12px)",
+              borderLeft: "1px solid rgba(255,255,255,0.06)",
+              overflow: "hidden",
+            }}
+          >
+            <Browser />
+          </div>
+        </Allotment.Pane>
+      </Allotment>
+    </div>
+  )
+}
+
 
 export default ProjectPlayground;
