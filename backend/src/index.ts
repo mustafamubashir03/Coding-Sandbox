@@ -30,7 +30,7 @@ io.on('connection', (socket) => {
 });
 let watcher: any = null;
 const editorNamespace = io.of('/editor');
-// const terminalNamespace = io.of('/terminal');
+
 editorNamespace.on('connection', (socket) => {
   const { projectId } = socket.handshake.auth;
   if (projectId) {
@@ -66,11 +66,3 @@ editorNamespace.on('connection', (socket) => {
 server.listen(PORT, () => {
   console.log('Server has been started at port', PORT);
 });
-
-/**
- * this ws connection is interacting with frontend client after the http request via
- * tcp connection has been upgraded to Tcp using the handlContainerCreate() function.
- * We are making sure that the raw ws connection with terminal first initialized the docker container
- * and then set the ws connection with that docker container. Then it would emit and event "connection"
- * indicating the client the form connecion  with this container to further execute the container.
- */

@@ -7,7 +7,6 @@ const docker = new Docker();
 
 export const listContainer = async () => {
   const containers = await docker.listContainers();
-  console.log('real', containers);
   containers?.forEach((container: any) => {
     console.log('ports: ', container.Ports, container.Names);
   });
@@ -69,6 +68,8 @@ export const handleContainerCreate = async ({
     });
 
     await container.start();
+    const port = await getContainerPort(projectId);
+    socket.emit('getPortSuccess', { port });
     console.log('container created & started:', container.id);
 
     // 3️⃣ Upgrade the WS connection after container is ready

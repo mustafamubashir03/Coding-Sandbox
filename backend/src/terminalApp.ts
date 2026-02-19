@@ -45,6 +45,14 @@ server.on('upgrade', async (req: IncomingMessage, socket: NetSocket, head: Buffe
   }
 });
 
+/**
+ * this ws connection is interacting with frontend client after the http request via
+ * tcp connection has been upgraded to Tcp using the handlContainerCreate() function.
+ * We are making sure that the raw ws connection with terminal first initialized the docker container
+ * and then set the ws connection with that docker container. Then it would emit and event "connection"
+ * indicating the client the form connecion  with this container to further execute the container.
+ */
+
 // Handle WS connection after upgrade
 webSocketTerminal.on('connection', (ws: WebSocket, req: IncomingMessage, container: Container) => {
   console.log('Terminal WS connected');
