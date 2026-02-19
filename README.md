@@ -5,6 +5,8 @@ DevPlayground is a **local web-based playground** that lets you:
 - Create a React project workspace
 - Browse a file tree, open files, and edit them in the browser
 - Use a terminal backed by a Docker container
+  
+<img width="1920" height="868" alt="coding-sandbox" src="https://github.com/user-attachments/assets/dc8fd361-b9ca-4864-a2f1-b6f51327edc0" />
 
 This repo is a monorepo:
 
