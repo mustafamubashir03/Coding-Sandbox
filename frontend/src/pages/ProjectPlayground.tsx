@@ -7,12 +7,18 @@ import { useEditorSocketStore } from '../store/editorSocketStore';
 import { useEffect } from 'react';
 import { io } from 'socket.io-client';
 import Terminal from '../components/molecules/EditorComponent/Terminal/TerminalComponent';
+import { useTerminalSocketStore } from '../store/terminalSocketStore';
 
 const { Sider, Content, Footer } = Layout;
 
 const ProjectPlayground = () => {
   const { projectId } = useParams();
   const { editorSocket, setEditorSocket } = useEditorSocketStore();
+  const { setTerminalSocket, clearTerminalSocket } = useTerminalSocketStore();
+  const fetchPort = () => {
+    editorSocket?.emit('getPort', { containerName: projectId });
+  };
+
   useEffect(() => {
     if (!projectId) {
       return;
@@ -23,11 +29,13 @@ const ProjectPlayground = () => {
       },
     });
     setEditorSocket(editorSocketConnection);
+    setTerminalSocket(projectId);
     return () => {
       editorSocketConnection.disconnect();
       setEditorSocket(null);
+      clearTerminalSocket();
     };
-  }, [setEditorSocket, projectId]);
+  }, [setEditorSocket, projectId, clearTerminalSocket, setTerminalSocket]);
   console.log(projectId);
   editorSocket?.on('writeFileSuccess', (data) => {
     console.log(data);
@@ -47,6 +55,9 @@ const ProjectPlayground = () => {
           background: 'transparent',
           backdropFilter: 'blur(12px)',
           borderRight: '1px solid rgba(255,255,255,0.06)',
+          height: '100vh',
+          overflowY: 'auto',
+          overflowX: 'hidden',
         }}
         breakpoint="lg"
         collapsedWidth={0}
@@ -97,6 +108,7 @@ const ProjectPlayground = () => {
         breakpoint="xl"
         collapsedWidth={0}
       >
+        <button onClick={fetchPort}>Get Port</button>
         Preview
       </Sider>
     </Layout>

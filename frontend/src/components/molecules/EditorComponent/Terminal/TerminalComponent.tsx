@@ -4,6 +4,7 @@ import { FitAddon } from '@xterm/addon-fit';
 import '@xterm/xterm/css/xterm.css';
 import { useParams } from 'react-router-dom';
 import { AttachAddon } from '@xterm/addon-attach';
+import { useTerminalSocketStore } from '../../../../store/terminalSocketStore';
 
 type Props = {
   className?: string;
@@ -14,7 +15,7 @@ const TerminalComponent = ({ className }: Props) => {
   const terminalRef = useRef<Terminal | null>(null);
   const fitAddonRef = useRef<FitAddon | null>(null);
   const { projectId } = useParams();
-  const socket = useRef<WebSocket | null>(null);
+  const { terminalSocket } = useTerminalSocketStore();
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -80,58 +81,24 @@ const TerminalComponent = ({ className }: Props) => {
     });
 
     resizeObserver.observe(containerRef.current);
-    const ws = new WebSocket(`ws://localhost:3000/terminal?projectId=${projectId}`);
-    ws.onopen = () => {
-      if (ws) {
-        const attachAddon = new AttachAddon(ws);
+    const handleOpen = () => {
+      if (terminalSocket) {
+        const attachAddon = new AttachAddon(terminalSocket);
         term.loadAddon(attachAddon);
-        socket.current = ws;
       }
     };
-    // socket.current = io(`${import.meta.env.VITE_BACKEND_URL}/terminal`, {
-    //   auth: {
-    //     projectId,
-    //   },
-    // });
 
-    // let currentLine = '';
-    // socket?.current?.on('shell-output', (data) => {
-    //   switch (data) {
-    //     // ENTER
-    //     case '\r':
-    //       term.write('\r\n');
-    //       console.log('Command:', currentLine);
-    //       currentLine = '';
-    //       term.write('$ ');
-    //       break;
-
-    //     // BACKSPACE
-    //     case '\x7f':
-    //       if (currentLine.length > 0) {
-    //         currentLine = currentLine.slice(0, -1);
-    //         term.write('\b \b'); // erase char visually
-    //       }
-    //       break;
-
-    //     default:
-    //       currentLine += data;
-    //       term.write(data);
-    //   }
-    // });
-
-    // term.onData((data) => {
-    //   console.log(data);
-    //   socket?.current?.emit('shell-input', data);
-    // });
+    terminalSocket?.addEventListener('open', handleOpen);
 
     return () => {
       resizeObserver.disconnect();
       term.dispose();
       terminalRef.current = null;
       fitAddonRef.current = null;
-      // socket.current?.disconnect();
+      terminalSocket?.close();
+      terminalSocket?.removeEventListener('open', handleOpen);
     };
-  }, [projectId]);
+  }, [projectId, terminalSocket]);
 
   return (
     <div
