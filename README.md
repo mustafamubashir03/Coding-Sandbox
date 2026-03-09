@@ -15,6 +15,12 @@ This repo is a monorepo:
 
 ---
 
+### System Design
+
+<img width="723" height="1055" alt="CodingSanbox drawio" src="https://github.com/user-attachments/assets/7c92ad24-2f26-43b1-a996-f5e87e50e8ec" />
+
+---
+
 ### Prerequisites
 
 - **Node.js 20+**
