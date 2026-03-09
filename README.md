@@ -17,7 +17,8 @@ This repo is a monorepo:
 
 ### System Design
 
-<img width="723" height="1055" alt="CodingSanbox drawio" src="https://github.com/user-attachments/assets/7c92ad24-2f26-43b1-a996-f5e87e50e8ec" />
+<img width="723" height="1058" alt="CodingSanbox drawio (1)" src="https://github.com/user-attachments/assets/86c00f55-4066-40f5-aa32-ec0877f8acaa" />
+
 
 ---
 
