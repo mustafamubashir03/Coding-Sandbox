@@ -10,6 +10,8 @@ This repo is a monorepo heavily utilizing isolated virtualization and bidirectio
 
 - **`frontend/`**: Vite + React UI ecosystem. Features an embedded Monaco Editor mapping dynamically mounted VFS directories, Xterm.js for authentic proxying to raw Docker `/bin/bash` TCP shells, and resilient Atomic Zustand states to orchestrate split-pane IDE layouts gracefully. 
 - **`backend/`**: Express API + real-time IPC multiplexer (Socket.io namespace `/editor`, native `ws` `/terminal`). Integrates deeply with Dockerode to spin up unprivileged `container` silos mapped directly to host ports strictly bypassing `localhost` CORS friction.
+- 
+<img width="1920" height="868" alt="coding-sandbox" src="https://github.com/user-attachments/assets/d0aed1b8-c28b-4029-b81b-56f191257ca0" />
 
 ---
 
