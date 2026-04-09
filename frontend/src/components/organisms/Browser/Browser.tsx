@@ -4,7 +4,7 @@ import { useEditorSocketStore } from '../../../store/editorSocketStore';
 import { Input } from 'antd';
 import { useEffect, useRef, useState } from 'react';
 import { useTerminalSocketStore } from '../../../store/terminalSocketStore';
-import { SyncOutlined } from '@ant-design/icons';
+import { SyncOutlined, PlayCircleOutlined } from '@ant-design/icons';
 
 const Browser = () => {
   const { projectId } = useParams();
@@ -14,6 +14,7 @@ const Browser = () => {
   const iframeRef = useRef<HTMLIFrameElement | null>(null);
 
   const [iframeSrc, setIframeSrc] = useState<string | null>(null);
+  const [loadingStatus, setLoadingStatus] = useState<string>("Your preview will appear here.");
 
   // Request port from backend
   useEffect(() => {
@@ -33,27 +34,38 @@ const Browser = () => {
     };
   }, [editorSocket, projectId, terminalSocket, port, setPort]);
 
-  // Poll localhost until dev server responds
+  // Poll localhost until dev server responds, but with limits and no-cors to avoid infinite TypeError spam
   useEffect(() => {
     if (!port) return;
 
     let cancelled = false;
+    let retries = 0;
+    const MAX_RETRIES = 60; // Max 2 minutes trying
 
     const pollServer = async () => {
-      if (cancelled) return;
+      if (cancelled || retries >= MAX_RETRIES) return;
+      retries++;
+
       try {
-        const res = await fetch(`http://localhost:${port}`, { method: 'HEAD' });
-        if (res.ok) {
+        // use no-cors so if the dev server is up but rejects CORS, we still get an 'opaque' response
+        // rather than a thrown TypeError, letting us know the port is active.
+        const res = await fetch(`http://localhost:${port}`, { mode: 'no-cors' });
+
+        if (res.type === 'opaque' || res.ok) {
           setIframeSrc(`http://localhost:${port}`);
         } else if (!cancelled) {
-          setTimeout(pollServer, 300);
+          setLoadingStatus("Pre-bundling dependencies (this may take a minute)...");
+          setTimeout(pollServer, 5000);
         }
-      } catch {
-        if (!cancelled) setTimeout(pollServer, 300);
+      } catch (error) {
+        // Connection refused -> server likely not running yet
+        setLoadingStatus("Sandbox initializing...");
+        if (!cancelled) setTimeout(pollServer, 5000);
       }
     };
 
-    pollServer();
+    // explicitly catch any extremely unexpected synchronous errors from pollServer async frame
+    pollServer().catch(e => setLoadingStatus("Sandbox initializing..."));
     return () => {
       cancelled = true;
     };
@@ -62,6 +74,12 @@ const Browser = () => {
   // Refresh iframe on icon click
   const handleRefresh = () => {
     if (port) setIframeSrc(`http://localhost:${port}?t=${Date.now()}`);
+  };
+
+  const handleStartProject = () => {
+    if (!terminalSocket || terminalSocket.readyState !== WebSocket.OPEN) return;
+    setLoadingStatus("Sending start command to Terminal...");
+    terminalSocket.send('cd sandbox && npm install && npm run dev -- --host 0.0.0.0\r');
   };
 
   return (
@@ -85,8 +103,34 @@ const Browser = () => {
             style={{ cursor: 'pointer', color: '#00e5ff' }}
           />
         }
+        suffix={
+          <button
+            onClick={handleStartProject}
+            style={{
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '6px',
+              height: "40px",
+              backgroundColor: '#00e5ff',
+              color: '#000',
+              fontWeight: 600,
+              padding: '4px 12px',
+              borderRadius: '4px',
+              fontSize: '12px',
+              border: 'none',
+              outline: 'none',
+              transition: 'opacity 0.2s',
+            }}
+            onMouseEnter={(e) => (e.currentTarget.style.opacity = '0.8')}
+            onMouseLeave={(e) => (e.currentTarget.style.opacity = '1')}
+          >
+            <PlayCircleOutlined size={24} /> Start Browser
+          </button>
+        }
         style={{
-          height: 32,
+          height: 50,
           borderRadius: 0,
           border: 'none',
           borderBottom: '1px solid rgba(255,255,255,0.08)',
@@ -99,7 +143,7 @@ const Browser = () => {
 
       {/* Iframe / loader container */}
       <div style={{ flex: 1, position: 'relative' }}>
-        {!iframeSrc && <ModernLoader />}
+        {!iframeSrc && <ModernLoader status={loadingStatus} />}
         {iframeSrc && (
           <iframe
             ref={iframeRef}
@@ -113,7 +157,7 @@ const Browser = () => {
 };
 
 // Modern centered loader component
-const ModernLoader = () => (
+const ModernLoader = ({ status = "Your preview will appear here." }: { status?: string }) => (
   <div
     style={{
       position: 'absolute',
@@ -141,7 +185,7 @@ const ModernLoader = () => (
       }}
     />
     <div style={{ fontSize: 14 }}>
-      Your preview will appear here.
+      {status}
       <br />
       Make sure to run <code>npm run dev</code> in your project!
     </div>

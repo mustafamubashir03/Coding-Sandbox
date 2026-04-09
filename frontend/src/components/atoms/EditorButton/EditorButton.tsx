@@ -1,6 +1,17 @@
-const EditorButton = ({ active = false, filename = 'File.js' }) => {
+import { IoClose } from 'react-icons/io5';
+import React from 'react';
+
+type EditorButtonProps = {
+  active?: boolean;
+  filename?: string;
+  onClick?: () => void;
+  onClose?: (e: React.MouseEvent) => void;
+};
+
+const EditorButton = ({ active = false, filename = 'File.js', onClick, onClose }: EditorButtonProps) => {
   return (
     <button
+      onClick={onClick}
       style={{
         background: active ? 'rgba(97,218,251,0.08)' : 'transparent',
 
@@ -20,7 +31,7 @@ const EditorButton = ({ active = false, filename = 'File.js' }) => {
 
         display: 'flex',
         alignItems: 'center',
-        gap: '8px',
+        gap: '4px',
       }}
       onMouseEnter={(e) => {
         if (!active) {
@@ -36,6 +47,14 @@ const EditorButton = ({ active = false, filename = 'File.js' }) => {
       }}
     >
       {filename}
+      <div 
+        onClick={onClose} 
+        style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', marginLeft: '4px', padding: '2px', borderRadius: '4px', transition: 'background 0.2s' }}
+        onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.1)'}
+        onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+      >
+        <IoClose size={14} />
+      </div>
     </button>
   );
 };

@@ -12,3 +12,5 @@ RUN apt update && apt install -y nano curl
 RUN echo "PS1='\w'" >> /home/sandbox/.bashrc
 
 WORKDIR /home/sandbox/app
+
+EXPOSE 5173

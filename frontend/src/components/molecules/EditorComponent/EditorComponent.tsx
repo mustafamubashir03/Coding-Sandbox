@@ -25,6 +25,14 @@ const EditorComponent = () => {
     }, 2000);
   };
 
+  if (!activeFileTab) {
+    return (
+      <div style={{ height: '80vh', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#6cb0e8', fontFamily: 'Fira Code' }}>
+        Select a file to start editing.
+      </div>
+    );
+  }
+
   return (
     <Editor
       height="80vh"
