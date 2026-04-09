@@ -1,28 +1,17 @@
-# DevPlayground IDE
+# DevPlayground
 
-DevPlayground is a highly resilient **local web-based IDE** powered by robust container virtualization. It allows you to provision entire React workspaces on the fly, edit your files dynamically in the browser, and natively access a Dockerized shell attached seamlessly to your project environment via isolated `.bash` sub-instances.
+DevPlayground is a **local web-based playground** that lets you:
 
----
+- Create a React project workspace
+- Browse a file tree, open files, and edit them in the browser
+- Use a terminal backed by a Docker container
 
-## 🏗️ Monorepo Architecture
+This repo is a monorepo:
 
-The ecosystem relies on an explicitly decoupled Monorepo structure containing resilient cross-talk bridging:
-
-### `frontend/` (Vite, React, TypeScript)
-- **Monaco Editor**: Provides a VSCode-caliber native editing experience inside the browser.
-- **Xterm.js**: Replicates a genuine Linux terminal interface fully piped via generic WebSocket.
-- **Dynamic IDE Grid**: Built using `allotment` split-panes to resize Project Files, Code Viewer, local CLI, and the Dev Server Iframe preview.
-- **Zustand State Engine**: Stores Atomic states for active tabs natively without causing aggressive rendering bottlenecks.
-
-### `backend/` (Express, Node, Dockerode, Sockets)
-- **RESTful Orchestrator**: Provisions distinct workspaces natively on the disk structure.
-- **Socket.io Editor Stream**: High-throughput file tracking. Reads and writes directly over an established namespace avoiding HTTP bottlenecks. Native `chokidar` polling runs safely on the user's host volumes.
-- **Dockerode VM Orchestrator**: Spins up isolated virtual Linux boxes bound strictly dynamically to allocated `ports`. It enforces heavy 2GB runtime buffers preventing Windows/Docker memory limits.
-- **Raw WebSockets IPC**: Avoids Socket.io latency on standard IO `/terminal` logs, giving immediate multiplexed `stream` access from the Virtual Sandbox.
+- `frontend/`: Vite + React UI (file tree, editor, terminal)
+- `backend/`: Express API + realtime channels for editor + terminal, plus Docker integration
 
 ---
-
-## 🚀 Setup & Initialization (Local Dev)
 
 ### Prerequisites
 - **Node.js 20+**
